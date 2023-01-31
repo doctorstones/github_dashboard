@@ -1,0 +1,25 @@
+body {
+  --nav-bg: #30313f;
+  /* Sopra vars, sotto props */
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  .navigation {
+    width: 100px;
+    height: 100vh;
+    padding: 1.5rem 0;
+    border: 0;
+    background-color: var(--nav-bg);
+  }
+  main {
+    flex:1;
+  }
+  .navigation {
+    padding: 0 1.25rem;
+    flex-wrap: nowrap;
+    min-height: 58px;
+  }
+}
+
+//@import "diagnostics";
