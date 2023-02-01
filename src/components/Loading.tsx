@@ -7,7 +7,9 @@ interface Props {
 
 const Loading: FC<Props> = ({ size }) => {
   return (
-    <ClayLoadingIndicator displayType="primary" shape="squares" size={size ?? "md"} />
+    <ClayLoadingIndicator displayType="primary" shape="squares" size={size ?? "md"} 
+      data-testid="loading"
+    />
   )
 }
 

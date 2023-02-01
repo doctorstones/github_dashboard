@@ -11,17 +11,17 @@ describe('GithubService', () => {
 
   it('fetchAllIssues - Issues', async () => {
 
-    const fetchAll = async () => await GithubService.fetchAllIssues('issues');
-    await expect(fetchAll()).rejects.toThrow(Error("Error: Empty Data"))
+    const result = await GithubService.fetchAllIssues('issues');
+    expect(result).toBeDefined()
 
   })
 
   it('fetchPullsDetail', async () => {
 
     const result = await GithubService.fetchPullsDetail();
-    const result_cached = await GithubService.fetchPullsDetail();
-
     expect(result).toBeDefined()
+    
+    const result_cached = await GithubService.fetchPullsDetail();
     expect(result_cached).toBeDefined()
     expect(result_cached).toBe(result)
 
@@ -43,9 +43,14 @@ describe('GithubService', () => {
 
   it('getIssuesAverageCloseTime', async () => {
 
-    const fetchAll = async () => await GithubService.getIssuesAverageCloseTime();
-    await expect(fetchAll()).rejects.toThrow(Error("Error: Error: Empty Data"))
+    const result = await GithubService.getIssuesAverageCloseTime();
+    expect(result).toBeDefined()
 
+  })
+
+  it('getIssuesForPeriod', async ()=>{
+    const result = await GithubService.getIssuesForPeriod({queryKey:['pulls'],meta:undefined});
+    expect(result).toBeDefined()
   })
 
 

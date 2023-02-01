@@ -1,7 +1,8 @@
 import { Octokit } from "octokit";
+import { TOKEN } from "./constants";
 
 const client = new Octokit({ 
-  auth: process.env.GH_TOKEN,
+  auth: TOKEN,
 });
 
 export default client;

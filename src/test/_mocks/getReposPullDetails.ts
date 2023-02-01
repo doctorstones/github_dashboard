@@ -1,14 +1,3 @@
-import { RestContext, RestRequest } from "msw"
-
-const getReposPullDetails = {
-  status200:(req: RestRequest, res: any, ctx: RestContext) => {
-    return res(
-      ctx.status(200),
-      ctx.json(jsonReposPullDetails),
-    )
-  },
-}
-
 const jsonReposPullDetails = {
   "url": "https://api.github.com/repos/recharts/recharts/pulls/3304",
   "id": 1223510557,
@@ -417,4 +406,4 @@ const jsonReposPullDetails = {
   "changed_files": 24
 }
 
-export {getReposPullDetails, jsonReposPullDetails}
+export {jsonReposPullDetails}

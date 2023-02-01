@@ -21,20 +21,20 @@ const PullSizesGraph: FC = () => {
   }
 
   return (
-    <ResponsiveContainer width={"100%"} height={300}>
-      <BarChart width={800} height={300} data={data}>
+    <ResponsiveContainer width={"100%"} height={350}>
+      <BarChart width={800} height={300} data={data} data-testid="barchart">
         <CartesianGrid strokeDasharray="3 1" />
         <XAxis
           dataKey="name"
-          // minTickGap={150}
-          // tickFormatter={day => dayjs(day).format('DD MMM')}
-        />
+         />
         <YAxis 
           tickFormatter={hour => hour+'h'}
         />
-        <Tooltip />
+        <Tooltip 
+          formatter={(v)=>[Number(v).toFixed(2),'Average Time']}
+        />
         <Legend />
-        <Bar dataKey="duration" fill="#8884d8" />
+        <Bar dataKey="duration" fill="#4B9BFF" />
       </BarChart>
     </ResponsiveContainer>
   )

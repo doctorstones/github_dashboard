@@ -2,7 +2,7 @@ import { QueryFunctionContext } from "@tanstack/react-query";
 import dayjs, { Dayjs } from "dayjs";
 import duration from "dayjs/plugin/duration";
 import client from "./client";
-import { CACHED_INTERVAL, PREVIEW, REPO } from "./constants";
+import { CACHED_INTERVAL, REPO } from "./constants";
 import { createTimeseriesKeys, formatDuration, formatRepoUrl } from "./utils";
 
 dayjs.extend(duration);
@@ -31,7 +31,7 @@ type IssuesType = 'issues' | 'pulls'
  * Apologize but I didnt find a better approach to handle this issue given the scope/documentation/time I had
  */
 
-const LIMIT_TO_LATEST = 5; // TODO handle better
+const LIMIT_TO_LATEST = 10; // TODO handle better
 
 const GithubService = {
 
@@ -113,7 +113,6 @@ const GithubService = {
       if (!GithubService.getCache('pullsDetail')) {
         detailedResult = await Promise.all(resultToFetch);
         detailedResult = detailedResult.filter((itm:any) => itm!==false )
-        console.log('detailedResult', detailedResult);
         GithubService.setCache('pullsDetail', detailedResult);
       } else {
         detailedResult = GithubService.getCache('pullsDetail')
@@ -242,8 +241,6 @@ const GithubService = {
         if (opened != null && Object(period).hasOwnProperty(opened)) period[opened].opened++;
         if (closed != null && Object(period).hasOwnProperty(closed)) period[closed].closed++;
       })
-
-      PREVIEW && console.log('issues', issues.length, period);
 
       return {
         count: issues.length,

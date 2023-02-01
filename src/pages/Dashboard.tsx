@@ -24,10 +24,10 @@ const Dashboard: FC = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col col-md-6">
+          <div className="col col-12 col-md-6">
             <AverageTime category="pullRequests" />
           </div>
-          <div className="col col-md-6">
+          <div className="col col-12 col-md-6">
             <AverageTime category="issues" />
           </div>
         </div>

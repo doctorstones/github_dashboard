@@ -1,46 +1,63 @@
-# Getting Started with Create React App
+# Daniele Massi - Liferay Front-end Test
+
+## Install Project
+
+1. Download and unzip the file in a folder
+2. From shell, go in that folder and type
+   `yarn` (or `npm i --force`).
+
+## Run Project
+
+Project can be run in develop or built.
+
+1. To run in develop, type from shell `yarn start` (or `npm run start`)
+1. To build, type from shell `yarn build`
+1. To run the build, type from shell `serve -s build`
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+### Basic Configuration
 
-In the project directory, you can run:
+To be run properly, project needs some environment variables.
+In the root folder, create a new file `.env` and paste this **before building**:
 
-### `npm start`
+```
+DEBUG=true
+GH_TOKEN=[Your personal Token on Github]
+GH_REPO_OWNER=recharts <- Repo owner
+GH_REPO_NAME=recharts <- Repo name
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+\*\*
+For example, If you want to address dashboard data to https://github.com/doctorstones/ga-test, change variables to
 
-### `npm test`
+```
+GH_REPO_OWNER=doctorstones
+GH_REPO_NAME=ga-test
+```
+Please note that the repo I've used as example (recharts) will require about 20secs to load data, because it contains a lot of issues/PR.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+### Some info on approach I've followed
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+*for data*
+- I never used before GithubRest API, so probably my lack of knowledge could had lead to some issue
+- As you know, GH Rest API for pullRequests returns additions/deletions data
+  only from "GET /pull_number" requests (and deeper), not from "GET /pulls" requests. Obtaining data for each PR means to make 1 request per PR;
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Since Rest API have rate limits and I'm moving in a simplified test/example approach, I've decided to use as Source of Truth a subset of results in front of the whole data that can come from an huge Repo. (this is valid ONLY for the first chart)
+- This will lead to imperfect result in terms of precision (average in that chart is falsed from partial data) but most likely will avoid to have a 403 status when fetching data for repo with a lot of activities;
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- For same reason I've tried to limit calls and reuse, whenever possible, data coming from first call only (getAllIssues), and to cache these result for a short period of time.
 
-### `npm run eject`
+- Apologize but I didnt find a better approach to handle this issue given the scope/documentation/time I had
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+*for libraries*
+- I've preferred to write service classes (no custom hooks) to mantain more agnosticism on data-layer. Service classes are written without use of React API and can be easily moved between different project and (personal opinion) better tested
+- I've choosen to use Recharts instead of @clayui/charts as the documentation itself suggest to follow this path
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## My contacts
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+email: danielemassi@gmail.com
+github: https://github.com/doctorstones
