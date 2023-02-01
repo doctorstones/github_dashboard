@@ -11,7 +11,7 @@ const Layout: FC<Props> = ({ children }) => {
         LOGO
       </nav>
       <main>
-        <header className="p-1">
+        <header className="p-1 shadow">
           <h1>Liferay</h1>
           <h5 className="text-muted">liferay-portal</h5>
         </header>

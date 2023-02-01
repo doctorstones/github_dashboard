@@ -2,14 +2,15 @@ import Button from "@clayui/button";
 import ClayCard from "@clayui/card";
 import ClayToolbar from "@clayui/toolbar";
 import { FC } from "react";
-import { AverageMergeTime, Layout } from "../components";
+import { AverageTime, Layout, MonthSummary } from "../components";
+import { PREVIEW } from "../services/constants";
 import GithubService from "../services/GithubService";
 
 const Dashboard: FC = () => {
 
   const handleButtonPull = async () => {
-    const result = await GithubService.fetchAveragePRMergeTime()
-    console.log(result)
+    const result = await GithubService.getAllIssues('pulls')
+    PREVIEW&&console.log(result)
   }
 
   return (
@@ -17,8 +18,10 @@ const Dashboard: FC = () => {
       <div className="container">
         <div className="row">
           <div className="col col-md-12 col-test">
-            test
-            <Button onClick={() => handleButtonPull()}>Pull</Button>
+            <ClayCard>
+              test
+              <Button onClick={() => handleButtonPull()}>Issues</Button>
+            </ClayCard>
           </div>
         </div>
         <div className="row">
@@ -36,24 +39,15 @@ const Dashboard: FC = () => {
         </div>
         <div className="row">
           <div className="col col-6">
-            <AverageMergeTime />
+            <AverageTime category="pullRequests" />
           </div>
           <div className="col col-6">
-            <ClayCard>
-              <ClayToolbar>
-                {"Average Issue Close Time"}
-              </ClayToolbar>
-            </ClayCard>
+            <AverageTime category="issues" />
           </div>
         </div>
         <div className="row">
           <div className="col col-12">
-
-            <ClayCard>
-              <ClayToolbar>
-                {"Month Summary"}
-              </ClayToolbar>
-            </ClayCard>
+            <MonthSummary />
           </div>
         </div>
       </div>
