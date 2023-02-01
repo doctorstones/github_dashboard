@@ -1,63 +1,65 @@
 import ClayCard from "@clayui/card"
 import { Heading } from "@clayui/core"
-import ClayLoadingIndicator from "@clayui/loading-indicator"
 import ClayTabs from "@clayui/tabs"
-import ClayToolbar from "@clayui/toolbar"
 import { useQuery } from "@tanstack/react-query"
 import { FC, useState } from "react"
-import { PREVIEW } from "../services/constants"
+import { RQ_NETWORK_MODE } from "../services/constants"
 import GithubService from "../services/GithubService"
+import { Loading } from "./Loading"
 import { MonthGraph } from "./MonthGraph"
 
 const MonthSummary: FC = () => {
 
   const [active, setActive] = useState(0);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['issuesMonthSummary'],
+  const issues = useQuery({
+    queryKey: ['issues'],
     queryFn: GithubService.getIssuesForPeriod,
-    networkMode: 'always',
+    networkMode: RQ_NETWORK_MODE
   })
 
-  PREVIEW && console.log('isLoading', isLoading, data)
+  const pulls = useQuery({
+    queryKey: ['pulls'],
+    queryFn: GithubService.getIssuesForPeriod,
 
-  // const pullsCount = isLoading ? <ClayLoadingIndicator displayType="primary" shape="squares" size="sm" /> : <>{data?.count}</>
+    networkMode: RQ_NETWORK_MODE
+  })
 
-  const issuesCount = isLoading ?
-    <ClayLoadingIndicator displayType="primary" shape="squares" size="sm" /> :
-    <>{data?.count}</>
+  const pullsCount = () => pulls.isLoading ?
+    <Loading size="sm" /> :
+    pulls.isError ? 0 :
+      <>{pulls.data?.count}</>
+
+  const issuesCount = () => issues.isLoading ?
+    <Loading size="sm" /> :
+    issues.isError ? 0 :
+      <>{issues.data?.count}</>
 
   return (
     <ClayCard>
-      <ClayToolbar>
+      <ClayCard.Description displayType="title">
         {"Month Summary"}
-      </ClayToolbar>
+      </ClayCard.Description>
       <ClayTabs active={active} modern onActiveChange={setActive}>
-        <ClayTabs.Item
-          innerProps={{
-            "aria-controls": "tabpanel-1"
-          }}
-        >
-          <Heading level={4}>Pull Request</Heading>
-          <Heading level={1}>{0}</Heading>
+        <ClayTabs.Item>
+          <Heading level={4} weight="light">Pull Request</Heading>
+          <Heading level={2} weight="normal">{pullsCount()}</Heading>
         </ClayTabs.Item>
-        <ClayTabs.Item
-          innerProps={{
-            "aria-controls": "tabpanel-1"
-          }}
-        >
-          <Heading level={4}>Issues</Heading>
-          <Heading level={1}>{issuesCount}</Heading>
+        <ClayTabs.Item>
+          <Heading level={4} weight="light">Issues</Heading>
+          <Heading level={2} weight="normal">{issuesCount()}</Heading>
         </ClayTabs.Item>
       </ClayTabs>
       <ClayTabs.Content fade activeIndex={active} >
-        <ClayTabs.TabPane tabIndex={0} aria-labelledby="tab-1">
-          1. Proin efficitur imperdiet dolor, a iaculis orci lacinia eu.
+        <ClayTabs.TabPane tabIndex={0} >
+          <div className="m-3">
+            <MonthGraph data={issues.data?.graphData} />
+          </div>
         </ClayTabs.TabPane>
-        <ClayTabs.TabPane tabIndex={1} aria-labelledby="tab-2">
+        <ClayTabs.TabPane tabIndex={1} >
 
           <div className="m-3">
-            <MonthGraph data={data?.graphData} />
+            <MonthGraph data={issues.data?.graphData} />
           </div>
 
         </ClayTabs.TabPane>

@@ -2,12 +2,19 @@ import dayjs from "dayjs"
 import { FC } from "react"
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { Timeseries } from "../services/utils"
+import { Empty } from "./Empty"
 
 interface Props {
   data?: Timeseries[]
 }
 
 const MonthGraph: FC<Props> = ({ data }: Props) => {
+
+  if (!data) {
+    return (
+      <Empty description="Graph is Empty" />
+    )
+  }
 
   return (
     <ResponsiveContainer width={"100%"} height={300}>

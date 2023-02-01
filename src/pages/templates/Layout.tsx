@@ -1,3 +1,4 @@
+import { Heading } from "@clayui/core"
 import { FC, ReactNode } from "react"
 
 type Props = {
@@ -6,13 +7,15 @@ type Props = {
 
 const Layout: FC<Props> = ({ children }) => {
   return (
-    <div className="container d-flex flex-row">
+    <div className="container d-flex flex-row position-relative">
       <nav className="navigation d-flex flex-column text-center navbar navbar-light hide-scrollbar">
-        LOGO
+        <div id="logo" className="logo">
+          LR
+        </div>
       </nav>
       <main>
-        <header className="p-1 shadow">
-          <h1>Liferay</h1>
+        <header className="py-2 px-4 mb-4 shadow">
+          <Heading level={1} weight="light">Liferay</Heading>
           <h5 className="text-muted">liferay-portal</h5>
         </header>
         <div className="container">
