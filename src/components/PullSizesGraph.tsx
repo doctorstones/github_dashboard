@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { FC } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { RQ_NETWORK_MODE } from "../services/constants"
 import GithubService from "../services/GithubService"
 import { Empty } from "./Empty"
 import { Loading } from "./Loading"
@@ -10,8 +9,7 @@ const PullSizesGraph: FC = () => {
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['pullSizes'],
-    queryFn: GithubService.getPullsAverageSize,
-    networkMode: RQ_NETWORK_MODE,
+    queryFn: GithubService.getPullsBySize,
   })
 
   if(isLoading) {
@@ -31,7 +29,9 @@ const PullSizesGraph: FC = () => {
           // minTickGap={150}
           // tickFormatter={day => dayjs(day).format('DD MMM')}
         />
-        <YAxis />
+        <YAxis 
+          tickFormatter={hour => hour+'h'}
+        />
         <Tooltip />
         <Legend />
         <Bar dataKey="duration" fill="#8884d8" />

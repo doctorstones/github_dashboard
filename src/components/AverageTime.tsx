@@ -2,7 +2,6 @@ import ClayCard from "@clayui/card"
 import { Heading } from "@clayui/core"
 import { useQuery } from "@tanstack/react-query"
 import { FC } from "react"
-import { RQ_NETWORK_MODE } from "../services/constants"
 import GithubService from "../services/GithubService"
 import { Empty } from "./Empty"
 import { Loading } from "./Loading"
@@ -17,8 +16,7 @@ const AverageTime: FC<Props> = ({ category }) => {
 
   const { data, isError, isLoading, isSuccess, error } = useQuery({
     queryKey: ['averageTime', category],
-    queryFn: averageData(category).function,
-    networkMode: RQ_NETWORK_MODE
+    queryFn: averageData(category).function
   })
 
   return (
@@ -44,12 +42,12 @@ const AverageTime: FC<Props> = ({ category }) => {
   )
 }
 
-const averageData = (category: Category) => { // TODO can be handled better (enum? map?)
+const averageData = (category: Category) => { 
   switch (category) {
     case "pullRequests":
       return {
         title: "Average Pull Request Merge Time",
-        function: GithubService.getPullsMergeTime
+        function: GithubService.getPullsAverageMergeTime
       };
     case "issues":
     default:

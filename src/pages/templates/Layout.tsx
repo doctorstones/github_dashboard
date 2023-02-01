@@ -7,8 +7,8 @@ type Props = {
 
 const Layout: FC<Props> = ({ children }) => {
   return (
-    <div className="container d-flex flex-row position-relative">
-      <nav className="navigation d-flex flex-column text-center navbar navbar-light hide-scrollbar">
+    <div className="container-fluid d-flex flex-row position-relative m-0 p-0">
+      <nav className="flex-column text-center navbar hide-scrollbar">
         <div id="logo" className="logo">
           LR
         </div>

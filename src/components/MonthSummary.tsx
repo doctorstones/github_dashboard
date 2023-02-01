@@ -3,7 +3,6 @@ import { Heading } from "@clayui/core"
 import ClayTabs from "@clayui/tabs"
 import { useQuery } from "@tanstack/react-query"
 import { FC, useState } from "react"
-import { RQ_NETWORK_MODE } from "../services/constants"
 import GithubService from "../services/GithubService"
 import { Loading } from "./Loading"
 import { MonthGraph } from "./MonthGraph"
@@ -15,14 +14,11 @@ const MonthSummary: FC = () => {
   const issues = useQuery({
     queryKey: ['issues'],
     queryFn: GithubService.getIssuesForPeriod,
-    networkMode: RQ_NETWORK_MODE
   })
 
   const pulls = useQuery({
     queryKey: ['pulls'],
     queryFn: GithubService.getIssuesForPeriod,
-
-    networkMode: RQ_NETWORK_MODE
   })
 
   const pullsCount = () => pulls.isLoading ?

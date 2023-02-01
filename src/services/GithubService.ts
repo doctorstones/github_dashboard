@@ -1,13 +1,13 @@
 import { QueryFunctionContext } from "@tanstack/react-query";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import duration from "dayjs/plugin/duration";
 import client from "./client";
-import { PREVIEW, REPO } from "./constants";
+import { CACHED_INTERVAL, PREVIEW, REPO } from "./constants";
 import { createTimeseriesKeys, formatDuration, formatRepoUrl } from "./utils";
 
 dayjs.extend(duration);
 
-type IssuesType='issues'|'pulls'
+type IssuesType = 'issues' | 'pulls'
 
 /**
  * Service-middleware for handling/parsing data from Github REST
@@ -31,23 +31,44 @@ type IssuesType='issues'|'pulls'
  * Apologize but I didnt find a better approach to handle this issue given the scope/documentation/time I had
  */
 
-const LIMIT_TO_LATEST = 20;
+const LIMIT_TO_LATEST = 5; // TODO handle better
 
 const GithubService = {
 
-  fetchAllIssues: async (type: IssuesType = 'issues') => {
+  _cache: {} as { [K: string]: { lastFetch: Dayjs, data: any } },
+
+  setCache: (key: string, data: any[]) => {
+    GithubService._cache[key] = { lastFetch: dayjs(), data };
+  },
+
+  getCache: (key: string) => {
+    if (GithubService._cache.hasOwnProperty(key)) {
+      if (GithubService._cache[key].lastFetch.diff() < CACHED_INTERVAL)
+        return GithubService._cache[key].data
+    }
+    return false;
+  },
+
+  fetchAllIssues: async (type: IssuesType = 'issues', forceRefresh: boolean = false) => {
 
     try {
 
-      const result = await client.paginate(
-        formatRepoUrl("GET /repos/{owner}/{repo}/issues"),
-        {
-          ...REPO,
-          state: "all",
-          direction: "desc",
-          per_page: 100
-        }
-      )
+      let result;
+      if (forceRefresh || !GithubService.getCache('allIssues')) {
+
+        result = await client.paginate(
+          formatRepoUrl("GET /repos/{owner}/{repo}/issues"),
+          {
+            ...REPO,
+            state: "all",
+            direction: "desc",
+            per_page: 100
+          }
+        )
+        GithubService.setCache('allIssues', result);
+      } else {
+        result = GithubService.getCache('allIssues');
+      }
 
       const filteredResult = result
         .filter(
@@ -71,7 +92,7 @@ const GithubService = {
     try {
 
       let COUNTER = 0;
-      
+
       const result = await GithubService.fetchAllIssues("pulls");
       const resultToFetch = result.map(async (itm: any) => {
         COUNTER++
@@ -82,14 +103,21 @@ const GithubService = {
               pull_number: itm.number
             }
           )
-          // console.log('pullDetail', pullDetail);
-          if (pullDetail.status === 200 && pullDetail.data) return pullDetail.data
-          return false;
+          return pullDetail.data
         }
+        return false;
+
       })
 
-      const detailedResult = await Promise.all(resultToFetch.filter((itm)=>!false));
-      console.log('detailedResult',detailedResult); 
+      let detailedResult;
+      if (!GithubService.getCache('pullsDetail')) {
+        detailedResult = await Promise.all(resultToFetch);
+        detailedResult = detailedResult.filter((itm:any) => itm!==false )
+        console.log('detailedResult', detailedResult);
+        GithubService.setCache('pullsDetail', detailedResult);
+      } else {
+        detailedResult = GithubService.getCache('pullsDetail')
+      }
       return detailedResult;
 
     } catch (error) {
@@ -106,15 +134,15 @@ const GithubService = {
    * @param context 
    * @returns 
    */
-  getPullsAverageSize: async (context?: QueryFunctionContext) => {
+  getPullsBySize: async (context?: QueryFunctionContext) => {
     try {
 
       const result = await GithubService.fetchPullsDetail()
 
       const sizes = [
-        { name: 'Small', range: [0, 100], pulls: 0, ms:0, duration: 0 },
-        { name: 'Medium', range: [101, 1000], pulls: 0, ms:0, duration: 0 },
-        { name: 'Large', range: [1001, Infinity], pulls: 0, ms:0, duration: 0 }
+        { name: 'Small', range: [0, 100], pulls: 0, ms: 0, duration: 0 },
+        { name: 'Medium', range: [101, 1000], pulls: 0, ms: 0, duration: 0 },
+        { name: 'Large', range: [1001, Infinity], pulls: 0, ms: 0, duration: 0 }
       ]
 
       result.forEach((itm: any) => {
@@ -142,36 +170,23 @@ const GithubService = {
    * @param context ReactQuery context (queryKey, params...)
    * @returns formatted string of averageTime
    */
-  getPullsMergeTime: async (context?: QueryFunctionContext) => {
+  getPullsAverageMergeTime: async (context?: QueryFunctionContext) => {
 
     try {
 
-      const result = await client.rest.pulls.list(
-        {
-          ...REPO,
-          state: "closed",
-          direction: "desc",
-          per_page: 100
-        }
-      )
-
-      if (result.status !== 200)
-        throw new Error('Status ' + result.status) // TODO handle errors;
-
-      if (!result.data.length)
-        throw new Error('Empty Data')
-
-      const durations = result.data
-        .filter(itm => itm.merged_at)
-        .map((itm) => dayjs(itm.merged_at).diff(itm.created_at))
-      const average = durations.reduce((a, b) => a + b) / durations.length;
+      const result = await GithubService.fetchAllIssues('pulls')
+      
+      const durations = result
+        .filter((itm: any) => itm.pull_request.merged_at)
+        .map((itm:any) => dayjs(itm.pull_request.merged_at).diff(itm.created_at))
+      const average = durations.reduce((a:number, b:number) => a + b) / durations.length;
       const averagePRMergeTime = dayjs.duration(average);
 
       return formatDuration(averagePRMergeTime)
 
     } catch (error) {
 
-      throw new Error('Parsing Failed: ' + String(error))
+      throw new Error(String(error))
 
     }
   },
@@ -188,7 +203,7 @@ const GithubService = {
       const durations = issues
         .filter((itm: any) => itm.state === 'closed')
         .map((itm: any) => dayjs(itm.closed_at).diff(itm.created_at))
-      const average = durations.reduce((a, b) => a + b) / durations.length;
+      const average = durations.reduce((a:number, b:number) => a + b) / durations.length;
 
       return formatDuration(dayjs.duration(average))
 
