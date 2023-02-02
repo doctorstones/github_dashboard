@@ -49,7 +49,7 @@ const MonthSummary: FC = () => {
       <ClayTabs.Content fade activeIndex={active} >
         <ClayTabs.TabPane tabIndex={0} >
           <div className="m-3">
-            <MonthGraph data={issues.data?.graphData} />
+            <MonthGraph data={pulls.data?.graphData} />
           </div>
         </ClayTabs.TabPane>
         <ClayTabs.TabPane tabIndex={1} >

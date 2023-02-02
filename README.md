@@ -12,18 +12,18 @@ To be run properly, project needs some environment variables.
 In the root folder, create a new file `.env` and paste this **before building**:
 
 ```
-DEBUG=true
-GH_TOKEN=[Your personal Token on Github]
-GH_REPO_OWNER=recharts <- Repo owner
-GH_REPO_NAME=recharts <- Repo name
+REACT_APP_DEBUG=true
+REACT_APP_GH_TOKEN=[Your personal Token on Github]
+REACT_APP_GH_REPO_OWNER=recharts <- Repo owner
+REACT_APP_GH_REPO_NAME=recharts <- Repo owner
 ```
 
 \*\*
 For example, If you want to address dashboard data to https://github.com/doctorstones/ga-test, change variables to
 
 ```
-GH_REPO_OWNER=doctorstones
-GH_REPO_NAME=ga-test
+REACT_APP_GH_REPO_OWNER=doctorstones
+REACT_APP_GH_REPO_NAME=ga-test
 ```
 Please note that the repo I've used as example (recharts) will require about 20secs to load data, because it contains a lot of issues/PR.
 
